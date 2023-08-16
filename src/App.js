@@ -1,23 +1,28 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import Header from './Header'; // Adjust the path if needed
+import InputForm from './InputForm'; // Adjust the path if needed
+import SearchResults from './SearchResults'; // Adjust the path if needed
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
+  const [searchResults, setSearchResults] = useState([]);
+
+  const handleSearch = (searchTerm) => {
+    // Call your scraping function and update searchResults state
+    // Example: Fetch data from an API or perform web scraping
+    // Update setSearchResults with the fetched/searched data
+    const searchData = []; // Replace this with actual search data
+    setSearchResults(searchData);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Header />
+      <main className="container">
+        <InputForm onSearch={handleSearch} />
+        <SearchResults results={searchResults} />
+      </main>
     </div>
   );
 }
