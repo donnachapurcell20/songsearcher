@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Header from './Header'; // Adjust the path if needed
-import InputForm from './InputForm'; // Adjust the path if needed
-import SearchResults from './SearchResults'; // Adjust the path if needed
+import Header from './components/Header'; // Adjust the path based on your project structure
+import InputForm from './components/InputForm'; // Adjust the path based on your project structure
+import SearchResults from './components/SearchResults'; // Adjust the path based on your project structure
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
