@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "Welcome to my Flask-React app!"
+    return "Home Page"
 
 @app.route('/search-tracks', methods=['GET'])
 def search_tracks():
