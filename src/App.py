@@ -1,112 +1,82 @@
-from flask import Flask, render_template
+from flask import Flask, jsonify, render_template, request
+import os
+import requests
 
 app = Flask(__name__)
 
+# Define your Spotify API credentials
+CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID')
+CLIENT_SECRET = os.getenv('SPOTIFY_CLIENT_SECRET')
+
+# Endpoint for serving your React app
 @app.route('/')
 def serve_react_app():
     return render_template('index.html')
 
-# Define your API routes here
+# Spotify API authorization helper function
+def get_spotify_access_token():
+    auth_response = requests.post('https://accounts.spotify.com/api/token', data={
+        'grant_type': 'client_credentials',
+        'client_id': CLIENT_ID,
+        'client_secret': CLIENT_SECRET,
+    })
+
+    auth_data = auth_response.json()
+    access_token = auth_data['access_token']
+    return access_token
+
+# API route for searching tracks on Spotify
 @app.route('/api/search-tracks')
 def search_tracks():
-    # Handle API logic here
-    return jsonify(result_data)
+    search_term = request.args.get('q')
+    access_token = get_spotify_access_token()
 
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
+
+    response = requests.get(
+        f'https://api.spotify.com/v1/search?q={search_term}&type=track',
+        headers=headers
+    )
+
+    response_data = response.json()
+    tracks = response_data.get('tracks', {}).get('items', [])
+    return jsonify(tracks)
+
+# API route for getting track details from Spotify
 @app.route('/api/get-track-details/<track_id>')
 def get_track_details(track_id):
-    # Handle API logic here
-    return jsonify(result_data)
+    access_token = get_spotify_access_token()
 
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
+
+    response = requests.get(
+        f'https://api.spotify.com/v1/tracks/{track_id}',
+        headers=headers
+    )
+
+    track_details = response.json()
+    return jsonify(track_details)
+
+# API route for getting track audio features from Spotify
 @app.route('/api/get-track-audio-features/<track_id>')
 def get_track_audio_features(track_id):
-    # Handle API logic here
-    return jsonify(result_data)
+    access_token = get_spotify_access_token()
+
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
+
+    response = requests.get(
+        f'https://api.spotify.com/v1/audio-features/{track_id}',
+        headers=headers
+    )
+
+    audio_features = response.json()
+    return jsonify(audio_features)
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
-# from flask import Flask, jsonify, request
-# import os
-# import requests
-
-# app = Flask(__name__)
-
-# @app.route('/')
-# def home():
-#     return "Home Page"
-
-# @app.route('/search-tracks', methods=['GET'])
-# def search_tracks():
-#     search_term = request.args.get('q')
-#     api_key = os.getenv('CLIENT_ID')
-    
-#     headers = {
-#         'Authorization': f'Bearer {api_key}'
-#     }
-    
-#     try:
-#         response = requests.get(
-#             f'https://api.spotify.com/v1/search?q={search_term}&type=track',
-#             headers=headers
-#         )
-#         response.raise_for_status()  # Raise an error for non-2xx responses
-#         response_data = response.json()
-#         tracks = response_data.get('tracks', {}).get('items', [])
-#         return jsonify(tracks)
-#     except requests.exceptions.RequestException as e:
-#         print('Error fetching from Spotify API:', e)
-#         return jsonify(error='Error fetching from Spotify API'), 500
-#     except Exception as e:
-#         print('Other error:', e)
-#         return jsonify(error='Internal Server Error'), 500
-
-# @app.route('/get-track-details/<track_id>', methods=['GET'])
-# def get_track_details(track_id):
-#     api_key = os.getenv('CLIENT_ID')
-    
-#     headers = {
-#         'Authorization': f'Bearer {api_key}'
-#     }
-    
-#     try:
-#         response = requests.get(
-#             f'https://api.spotify.com/v1/tracks/{track_id}',
-#             headers=headers
-#         )
-#         response.raise_for_status()  
-#         track_details = response.json()
-#         return jsonify(track_details)
-#     except requests.exceptions.RequestException as e:
-#         print('Error fetching track details:', e)
-#         return jsonify(error='Error fetching track details'), 500
-#     except Exception as e:
-#         print('Other error:', e)
-#         return jsonify(error='Internal Server Error'), 500
-
-# @app.route('/get-track-audio-features/<track_id>', methods=['GET'])
-# def get_track_audio_features(track_id):
-#     api_key = os.getenv('CLIENT_ID')
-    
-#     headers = {
-#         'Authorization': f'Bearer {api_key}'
-#     }
-    
-#     try:
-#         response = requests.get(
-#             f'https://api.spotify.com/v1/audio-features/{track_id}',
-#             headers=headers
-#         )
-#         response.raise_for_status()  # Raise an error for non-2xx responses
-#         audio_features = response.json()
-#         return jsonify(audio_features)
-#     except requests.exceptions.RequestException as e:
-#         print('Error fetching audio features:', e)
-#         return jsonify(error='Error fetching audio features'), 500
-#     except Exception as e:
-#         print('Other error:', e)
-#         return jsonify(error='Internal Server Error'), 500
-
-# if __name__ == '__main__':
-#     app.run(debug=True)
