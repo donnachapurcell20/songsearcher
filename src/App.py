@@ -9,6 +9,7 @@ app = Flask(__name__)
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 
+
 # Token management variables
 access_token = None
 expiration_time = datetime.min
@@ -20,9 +21,12 @@ def get_spotify_access_token():
     if expiration_time <= datetime.now():
         auth_response = requests.post('https://accounts.spotify.com/api/token', data={
             'grant_type': 'client_credentials',
-            'client_id': CLIENT_ID,
-            'client_secret': CLIENT_SECRET,
+            'CLIENT_ID': CLIENT_ID,
+            'CLIENT_SECRET': CLIENT_SECRET,
         })
+
+        print("Auth response status code:", auth_response.status_code)
+        print("Auth response JSON:", auth_response.json())
 
         if auth_response.status_code != 200:
             print("Failed to obtain access token from Spotify API")
