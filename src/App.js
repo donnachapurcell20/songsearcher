@@ -1,26 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import Header from './components/Header';
+import InputForm from './components/InputForm';
+import SearchResults from './components/SearchResults';
+import Footer from './components/Footer'; // Import the Footer component
 
 function App() {
-    const [data, setData] = useState([]);
-
-    useEffect(() => {
-        // Make API call to Flask backend
-        axios.get('/api/search-tracks')
-            .then(response => {
-                setData(response.data);
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
-    }, []);
-
-    // Render your React components
-    return (
-        <div>
-            {/* Render your components using the data */}
-        </div>
-    );
+  return (
+    <Router>
+      <div>
+        <Header />
+        <p>This is a paragraph before the InputForm.</p> {/* Add your paragraph */}
+        <Switch>
+          <Route path="/" exact component={InputForm} />
+          <Route path="/search-tracks" component={SearchResults} />
+          {/* Add more routes/components as needed */}
+        </Switch>
+        <Footer /> {/* Include the Footer component */}
+      </div>
+    </Router>
+  );
 }
 
 export default App;

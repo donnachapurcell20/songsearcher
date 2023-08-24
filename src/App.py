@@ -5,8 +5,8 @@ import requests
 app = Flask(__name__)
 
 # Define your Spotify API credentials
-CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID')
-CLIENT_SECRET = os.getenv('SPOTIFY_CLIENT_SECRET')
+CLIENT_ID = os.getenv('Client_ID')
+CLIENT_SECRET = os.getenv('Client_secret')
 
 # Endpoint for serving your React app
 @app.route('/')
