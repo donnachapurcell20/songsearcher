@@ -1,44 +1,15 @@
 from flask import Flask, jsonify, render_template, request
 import os
+from datetime import datetime
+from spotify_api import SpotifyAPI
 import requests
-from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
-# Define your Spotify API credentials
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 
-
-# Token management variables
-access_token = None
-expiration_time = datetime.min
-
-# Spotify API authorization helper function
-def get_spotify_access_token():
-    global access_token, expiration_time
-    
-    if expiration_time <= datetime.now():
-        auth_response = requests.post('https://accounts.spotify.com/api/token', data={
-            'grant_type': 'client_credentials',
-            'CLIENT_ID': CLIENT_ID,
-            'CLIENT_SECRET': CLIENT_SECRET,
-        })
-
-        print("Auth response status code:", auth_response.status_code)
-        print("Auth response JSON:", auth_response.json())
-
-        if auth_response.status_code != 200:
-            print("Failed to obtain access token from Spotify API")
-            print("Error response:", auth_response.text)  # Add this line to print the error response
-            raise Exception("Failed to obtain access token from Spotify API")
-
-        auth_data = auth_response.json()
-        access_token = auth_data['access_token']
-        expiration_seconds = auth_data['expires_in']
-        expiration_time = datetime.now() + timedelta(seconds=expiration_seconds)
-
-    return access_token
+spotify_api = SpotifyAPI(CLIENT_ID, CLIENT_SECRET)
 
 # Endpoint for serving your React app
 @app.route('/')
@@ -53,7 +24,7 @@ def search_tracks():
         return jsonify(error='Missing search term'), 400
 
     try:
-        access_token = get_spotify_access_token()
+        access_token = spotify_api.get_access_token()
 
         headers = {
             'Authorization': f'Bearer {access_token}'
@@ -74,7 +45,7 @@ def search_tracks():
 @app.route('/api/get-track-details/<track_id>')
 def get_track_details(track_id):
     try:
-        access_token = get_spotify_access_token()
+        access_token = spotify_api.get_access_token()
 
         headers = {
             'Authorization': f'Bearer {access_token}'
@@ -94,7 +65,7 @@ def get_track_details(track_id):
 @app.route('/api/get-track-audio-features/<track_id>')
 def get_track_audio_features(track_id):
     try:
-        access_token = get_spotify_access_token()
+        access_token = spotify_api.get_access_token()
 
         headers = {
             'Authorization': f'Bearer {access_token}'
@@ -111,6 +82,4 @@ def get_track_audio_features(track_id):
         return jsonify(error='Error fetching audio features'), 500
 
 if __name__ == '__main__':
-    # Initialize access token
-    access_token = get_spotify_access_token()
     app.run(debug=True)
