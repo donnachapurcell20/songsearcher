@@ -1,3 +1,16 @@
+# Song Searcher
+This application will be a SPA (Single Page Application)
+
+##Backend
+Python Flask
+
+##Frontend
+React
+
+#Objective
+To allow the user to enter either the artist name or the song name show information from spotify and find the music video linked to that song on youtube, and show both
+
+-------------------------------------------------------------------
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
