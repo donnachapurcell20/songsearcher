@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+
 import Header from './components/Header';
 import InputForm from './components/InputForm';
 import SearchResults from './components/SearchResults';
@@ -11,11 +12,11 @@ function App() {
       <div>
         <Header />
         <p>This is a paragraph before the InputForm.</p> {/* Add your paragraph */}
-        <Switch>
-          <Route path="/" exact component={InputForm} />
-          <Route path="/search-tracks" component={SearchResults} />
+        <Routes>
+          <Route path="/" element={<InputForm />} />
+          <Route path="/search-tracks" element={<SearchResults />} />
           {/* Add more routes/components as needed */}
-        </Switch>
+        </Routes>
         <Footer /> {/* Include the Footer component */}
       </div>
     </Router>
@@ -23,3 +24,4 @@ function App() {
 }
 
 export default App;
+

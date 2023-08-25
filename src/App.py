@@ -1,20 +1,16 @@
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, request
+from flask_cors import CORS  # Import the CORS module
 import os
-from datetime import datetime
 from spotify_api import SpotifyAPI
 import requests
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 
 spotify_api = SpotifyAPI(CLIENT_ID, CLIENT_SECRET)
-
-# Endpoint for serving your React app
-@app.route('/')
-def serve_react_app():
-    return render_template('index.html')
 
 # API route for searching tracks on Spotify
 @app.route('/api/search-tracks')
