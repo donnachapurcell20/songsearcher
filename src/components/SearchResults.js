@@ -1,36 +1,41 @@
-// src/SearchResults.js
-
 import React, { useState, useEffect } from 'react';
 
-function SearchResults({ artistName, songName }) {
+function fetchSearchResults(artistName, songName, accessToken) {
+  const API_URL = 'https://api.spotify.com/v1/search';
+
+  const searchQuery = `${artistName} ${songName}`;
+  const encodedQuery = encodeURIComponent(searchQuery);
+  const searchUrl = `${API_URL}?q=${encodedQuery}&type=track`;
+
+  return fetch(searchUrl, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`
+    }
+  }).then(response => response.json());
+}
+
+function SearchResults({ artistName, songName, accessToken }) {
   const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Define your Spotify API credentials or access token here
-    const API_URL = 'https://api.spotify.com/v1/search';
-    const ACCESS_TOKEN = 'your_access_token_here';
-
-    // Construct the API request URL
-    const searchQuery = `${artistName} ${songName}`;
-    const encodedQuery = encodeURIComponent(searchQuery);
-    const searchUrl = `${API_URL}?q=${encodedQuery}&type=track`;
-
-    // Make the API request
-    fetch(searchUrl, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${ACCESS_TOKEN}`
-      }
-    })
-      .then(response => response.json())
+    setLoading(true);
+    fetchSearchResults(artistName, songName, accessToken)
       .then(data => {
         const tracks = data.tracks.items;
         setResults(tracks);
+        setLoading(false);
       })
       .catch(error => {
         console.error('Error fetching search results:', error);
+        setLoading(false);
       });
-  }, [artistName, songName]);
+  }, [artistName, songName, accessToken]);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div className="search-results">
