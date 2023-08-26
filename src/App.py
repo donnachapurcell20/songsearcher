@@ -7,6 +7,10 @@ import requests
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
+@app.route('/')
+def hello_world():
+    return jsonify(message='Welcome to the Spotify API Server')
+
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 
