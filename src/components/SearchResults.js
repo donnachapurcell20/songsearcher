@@ -7,8 +7,6 @@ function fetchSearchResults(artistName, songName, accessToken) {
   const encodedQuery = encodeURIComponent(searchQuery);
   const searchUrl = `${API_URL}?q=${encodedQuery}&type=track`;
 
-  console.log('Sending request to:', searchUrl); // Debugging
-
   return fetch(searchUrl, {
     method: 'GET',
     headers: {
@@ -18,40 +16,52 @@ function fetchSearchResults(artistName, songName, accessToken) {
   .then(response => response.json())
   .catch(error => {
     console.error('Error fetching search results:', error);
-    throw error; // Rethrow the error to be caught in the component
+    throw error;
   });
 }
 
 function SearchResults({ artistName, songName, accessToken }) {
   const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Set loading to false initially
 
   useEffect(() => {
-    setLoading(true);
-    fetchSearchResults(artistName, songName, accessToken)
-      .then(data => {
-        const tracks = data.tracks.items;
-        setResults(tracks);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching search results:', error);
-        setLoading(false);
-      });
+    if (artistName && songName) { // Check if both artistName and songName are present
+      setLoading(true);
+      fetchSearchResults(artistName, songName, accessToken)
+        .then(data => {
+          const tracks = data.tracks.items;
+          setResults(tracks);
+          setLoading(false);
+        })
+        .catch(error => {
+          console.error('Error fetching search results:', error);
+          setLoading(false);
+        });
+    } else {
+      setResults([]); // Clear results if input is empty
+    }
   }, [artistName, songName, accessToken]);
-
-  if (loading) {
-    return <p>Loading...</p>;
-  }
 
   return (
     <div className="search-results">
-      {results.map((result, index) => (
-        <div key={index} className="result-item">
-          <h3>{result.name}</h3>
-          {/* Display additional result information */}
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <div>
+          {results.length === 0 ? (
+            <p>No results found.</p>
+          ) : (
+            <div>
+              {results.map((result, index) => (
+                <div key={index} className="result-item">
+                  <h3>{result.name}</h3>
+                  {/* Display additional result information */}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      ))}
+      )}
     </div>
   );
 }
