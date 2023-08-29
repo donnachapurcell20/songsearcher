@@ -23,9 +23,7 @@ function App() {
         <p>This is a paragraph before the InputForm.</p>
 
         {/* Adding the "Hello, World!" message */}
-        <div>
-          <h2>Hello, World!</h2>
-        </div>
+        
 
         <Routes>
           <Route

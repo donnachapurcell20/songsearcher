@@ -7,12 +7,19 @@ function fetchSearchResults(artistName, songName, accessToken) {
   const encodedQuery = encodeURIComponent(searchQuery);
   const searchUrl = `${API_URL}?q=${encodedQuery}&type=track`;
 
+  console.log('Sending request to:', searchUrl); // Debugging
+
   return fetch(searchUrl, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${accessToken}`
     }
-  }).then(response => response.json());
+  })
+  .then(response => response.json())
+  .catch(error => {
+    console.error('Error fetching search results:', error);
+    throw error; // Rethrow the error to be caught in the component
+  });
 }
 
 function SearchResults({ artistName, songName, accessToken }) {
