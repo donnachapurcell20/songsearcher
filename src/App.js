@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom'; // Import createRoot from the correct location
 import Header from './components/Header';
 import InputForm from './components/InputForm';
 import SearchResults from './components/SearchResults';
@@ -36,6 +36,7 @@ function App() {
   );
 }
 
+// Use createRoot to render the app
 const rootElement = document.getElementById('root');
-const root = ReactDOM.createRoot(rootElement);
+const root = createRoot(rootElement);
 root.render(<App />);
