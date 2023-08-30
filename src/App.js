@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { createRoot } from 'react-dom/client'; // Import createRoot from the correct location
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import './App.css';
 import Header from './components/Header';
 import InputForm from './components/InputForm';
 import SearchResults from './components/SearchResults';
@@ -18,25 +19,30 @@ function App() {
   };
 
   return (
-    <div>
-      <Header />
-      <p>This is a paragraph before the InputForm.</p>
-      
-      <InputForm onSearch={handleSearch} />
-      <SearchResults
-        artistName={searchParams.artistName}
-        songName={searchParams.songName}
-        results={searchResults}
-      />
+    <Router>
+      <div>
+        <Header />
+        <p>This is a paragraph before the InputForm.</p>
 
-      <Footer />
-    </div>
+        <Switch>
+          <Route path="/search-tracks">
+            <InputForm onSearch={handleSearch} />
+            <SearchResults
+              artistName={searchParams.artistName}
+              songName={searchParams.songName}
+              results={searchResults}
+            />
+          </Route>
+          {/* Add more Route components for other pages */}
+          <Route path="/">
+            {/* Home component */}
+          </Route>
+        </Switch>
+
+        <Footer />
+      </div>
+    </Router>
   );
 }
-
-// Use createRoot to render the app
-const rootElement = document.getElementById('root');
-const root = createRoot(rootElement);
-root.render(<App />);
 
 export default App;
