@@ -1,17 +1,12 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 import './App.css';
 import Header from './components/Header';
+import InputForm from './components/InputForm'; // Import InputForm component
 import SearchResults from './components/SearchResults';
 import Footer from './components/Footer';
 
 function App() {
-  const [searchResults, setSearchResults] = useState([]);
-
-  const handleSearch = (artistName, songName, results) => {
-    setSearchResults(results);
-  };
-
   return (
     <div>
       <Header />
@@ -23,7 +18,7 @@ function App() {
           element={ // Initial content from index.js
             <div>
               <h2>Search Tracks</h2>
-              {/* Your textboxes and search button */}
+              <InputForm /> {/* Include the InputForm component */}
             </div>
           }
         />
@@ -33,7 +28,7 @@ function App() {
             <SearchResults
               artistName=""
               songName=""
-              results={searchResults}
+              results={[]}
             />
           }
         />

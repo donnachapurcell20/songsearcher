@@ -9,31 +9,14 @@ function InputForm({ onSearch }) {
     setLoading(true);
 
     try {
-      const response = await fetchSearchResults(artistName, songName);
-      const results = response.tracks.items;
+      const response = await fetch(`/api/search-tracks?q=${artistName} ${songName}`);
+      const results = await response.json();
       onSearch(artistName, songName, results);
     } catch (error) {
       console.error('Error fetching search results:', error);
     } finally {
       setLoading(false);
     }
-  };
-
-  const fetchSearchResults = async (artist, song) => {
-    const API_URL = 'https://api.spotify.com/v1/search';
-    const searchQuery = `${artist} ${song}`;
-    const encodedQuery = encodeURIComponent(searchQuery);
-    const searchUrl = `${API_URL}?q=${encodedQuery}&type=track`;
-
-    const accessToken = 'YOUR_ACCESS_TOKEN'; // Replace with actual access token
-    const response = await fetch(searchUrl, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`
-      }
-    });
-
-    return response.json();
   };
 
   return (
