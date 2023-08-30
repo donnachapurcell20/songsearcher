@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
 import Header from './components/Header';
 import InputForm from './components/InputForm';
 import SearchResults from './components/SearchResults';
@@ -35,4 +36,6 @@ function App() {
   );
 }
 
-export default App;
+const rootElement = document.getElementById('root');
+const root = ReactDOM.createRoot(rootElement);
+root.render(<App />);
