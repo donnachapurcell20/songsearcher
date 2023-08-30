@@ -25,7 +25,7 @@ function SearchResults({ artistName, songName, accessToken }) {
   const [loading, setLoading] = useState(false); // Set loading to false initially
 
   useEffect(() => {
-    if (artistName && songName) { // Check if both artistName and songName are present
+    if (artistName && songName) { //Check if both artistName and songName are present will want to change this to and/or
       setLoading(true);
       fetchSearchResults(artistName, songName, accessToken)
         .then(data => {
@@ -38,7 +38,7 @@ function SearchResults({ artistName, songName, accessToken }) {
           setLoading(false);
         });
     } else {
-      setResults([]); // Clear results if input is empty
+      setResults([]);
     }
   }, [artistName, songName, accessToken]);
 
