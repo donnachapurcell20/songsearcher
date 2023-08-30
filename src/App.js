@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createRoot } from 'react-dom'; // Import createRoot from the correct location
+import { createRoot } from 'react-dom/client'; // Import createRoot from the correct location
 import Header from './components/Header';
 import InputForm from './components/InputForm';
 import SearchResults from './components/SearchResults';
@@ -21,8 +21,6 @@ function App() {
     <div>
       <Header />
       <p>This is a paragraph before the InputForm.</p>
-
-      {/* Adding the "Hello, World!" message */}
       
       <InputForm onSearch={handleSearch} />
       <SearchResults
@@ -40,3 +38,5 @@ function App() {
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement);
 root.render(<App />);
+
+export default App;
