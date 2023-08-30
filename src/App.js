@@ -1,47 +1,47 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Header from './components/Header';
-import InputForm from './components/InputForm';
 import SearchResults from './components/SearchResults';
 import Footer from './components/Footer';
 
 function App() {
-  const [searchParams, setSearchParams] = useState({
-    artistName: '',
-    songName: '',
-  });
   const [searchResults, setSearchResults] = useState([]);
 
   const handleSearch = (artistName, songName, results) => {
-    setSearchParams({ artistName, songName });
     setSearchResults(results);
   };
 
   return (
-    <Router>
-      <div>
-        <Header />
-        <p>This is a paragraph before the InputForm.</p>
+    <div>
+      <Header />
+      <p>This is a paragraph before the InputForm.</p>
 
-        <Switch>
-          <Route path="/search-tracks">
-            <InputForm onSearch={handleSearch} />
+      <Routes>
+        <Route
+          path="/"
+          element={ // Initial content from index.js
+            <div>
+              <h2>Search Tracks</h2>
+              {/* Your textboxes and search button */}
+            </div>
+          }
+        />
+        <Route
+          path="/search-tracks"
+          element={
             <SearchResults
-              artistName={searchParams.artistName}
-              songName={searchParams.songName}
+              artistName=""
+              songName=""
               results={searchResults}
             />
-          </Route>
-          {/* Add more Route components for other pages */}
-          <Route path="/">
-            {/* Home component */}
-          </Route>
-        </Switch>
+          }
+        />
+        {/* Add more Route components for other pages */}
+      </Routes>
 
-        <Footer />
-      </div>
-    </Router>
+      <Footer />
+    </div>
   );
 }
 
