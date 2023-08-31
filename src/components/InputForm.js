@@ -9,7 +9,9 @@ function InputForm({ onSearch }) {
     setLoading(true);
 
     try {
-      const response = await fetch(`/api/search-tracks?q=${artistName} ${songName}`);
+      const encodedArtistName = encodeURIComponent(artistName);
+      const encodedSongName = encodeURIComponent(songName);
+      const response = await fetch(`/api/search-tracks?q=${encodedArtistName} ${encodedSongName}`);
       const results = await response.json();
       onSearch(artistName, songName, results);
     } catch (error) {

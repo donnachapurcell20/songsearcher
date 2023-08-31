@@ -5,7 +5,7 @@ from spotify_api import SpotifyAPI
 import requests
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}}) # Enable CORS for all routes
 
 @app.route('/')
 def hello_world():
