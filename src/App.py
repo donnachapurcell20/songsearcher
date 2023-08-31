@@ -37,7 +37,9 @@ def search_tracks():
 
         response_data = response.json()
         tracks = response_data.get('tracks', {}).get('items', [])
-        return jsonify(tracks)
+        
+        # Return the tracks as a dictionary within a 'tracks' key
+        return jsonify({'tracks': tracks})
     except Exception as e:
         return jsonify(error='Error fetching from Spotify API'), 500
 
