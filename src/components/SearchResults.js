@@ -13,12 +13,23 @@ function fetchSearchResults(artistName, songName, accessToken) {
       'Authorization': `Bearer ${accessToken}`
     }
   })
-  .then(response => response.json())
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Error fetching search results. Check your request.');
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log('Response data:', data); // Log the response data
+    return data;
+  })
   .catch(error => {
     console.error('Error fetching search results:', error);
     throw error;
   });
 }
+
+
 
 function SearchResults({ artistName, songName, accessToken }) {
   const [results, setResults] = useState([]);

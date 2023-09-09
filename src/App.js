@@ -3,7 +3,6 @@ import { Routes, Route } from 'react-router-dom';
 import './App.css';
 import Header from './components/Header';
 import InputForm from './components/InputForm'; // Import InputForm component
-import SearchResults from './components/SearchResults';
 import Footer from './components/Footer';
 
 function App() {
@@ -22,16 +21,7 @@ function App() {
             </div>
           }
         />
-        <Route
-          path="/search-tracks"
-          element={
-            <SearchResults
-              artistName=""
-              songName=""
-              results={[]}
-            />
-          }
-        />
+        {/* Remove the Route for /search-tracks */}
         {/* Add more Route components for other pages */}
       </Routes>
 
