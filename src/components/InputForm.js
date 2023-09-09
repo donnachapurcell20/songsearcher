@@ -12,8 +12,8 @@ function InputForm({ onSearch }) {
     try {
       const encodedArtistName = encodeURIComponent(artistName);
       const encodedSongName = encodeURIComponent(songName);
-      console.log(`Fetch URL: /api/search-tracks?q=${encodedArtistName} ${encodedSongName}`);
-      const response = await fetch(`/api/search-tracks?q=${encodedArtistName} ${encodedSongName}`);
+      console.log(`Fetch URL: /api/search-tracks?q=artist:"${encodedArtistName}" track:"${encodedSongName}"`);
+      const response = await fetch(`/api/search-tracks?q=artist:"${encodedArtistName}" track:"${encodedSongName}"`);
       console.log('Response:', response);
       const results = await response.json();
       console.log('Results:', results);
