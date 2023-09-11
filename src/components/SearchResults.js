@@ -1,43 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-function fetchSearchResults(artistName, songName, accessToken) {
-  const API_URL = 'https://api.spotify.com/v1/search';
-
-  const searchQuery = `${artistName} ${songName}`;
-  const encodedQuery = encodeURIComponent(searchQuery);
-  const searchUrl = `${API_URL}?q=${encodedQuery}&type=track`;
-
-  return fetch(searchUrl, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${accessToken}`
-    }
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Error fetching search results. Check your request.');
-    }
-    return response.json();
-  })
-  .then(data => {
-    console.log('Response data:', data); // Log the response data
-    return data;
-  })
-  .catch(error => {
-    console.error('Error fetching search results:', error);
-    throw error;
-  });
-}
-
-
-
 function SearchResults({ artistName, songName, accessToken }) {
   const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false); // Set loading to false initially
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (artistName && songName) { //Check if both artistName and songName are present will want to change this to and/or
+    if (artistName && songName && accessToken) {
       setLoading(true);
+
       fetchSearchResults(artistName, songName, accessToken)
         .then(data => {
           const tracks = data.tracks.items;
@@ -52,6 +22,32 @@ function SearchResults({ artistName, songName, accessToken }) {
       setResults([]);
     }
   }, [artistName, songName, accessToken]);
+
+  const fetchSearchResults = async (artistName, songName, accessToken) => {
+    const API_URL = 'https://api.spotify.com/v1/search';
+    const searchQuery = `${artistName} ${songName}`;
+    const encodedQuery = encodeURIComponent(searchQuery);
+
+    try {
+      const response = await fetch(`${API_URL}?q=${encodedQuery}&type=track`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Error fetching search results. Check your request.');
+      }
+
+      const data = await response.json();
+      console.log('Response data:', data);
+      return data;
+    } catch (error) {
+      console.error('Error fetching search results:', error);
+      throw error;
+    }
+  };
 
   return (
     <div className="search-results">
