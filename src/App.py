@@ -1,4 +1,4 @@
-import logging  # Import the logging module
+import logging
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
@@ -27,7 +27,7 @@ def search_tracks():
         return jsonify(error='Missing search term'), 400
 
     try:
-        access_token = spotify_api.get_access_token()
+        access_token = spotify_api.get_client_credentials_access_token()
 
         headers = {
             'Authorization': f'Bearer {access_token}'
@@ -46,48 +46,8 @@ def search_tracks():
 
         return jsonify({'tracks': tracks})
     except Exception as e:
-        logging.error('Error fetching from Spotify API:', exc_info=True)  # Log the error with traceback
+        logging.error('Error fetching from Spotify API:', exc_info=True)
         return jsonify(error='Error fetching from Spotify API'), 500
-
-@app.route('/api/get-track-details/<track_id>')
-def get_track_details(track_id):
-    try:
-        access_token = spotify_api.get_access_token()
-
-        headers = {
-            'Authorization': f'Bearer {access_token}'
-        }
-
-        response = requests.get(
-            f'https://api.spotify.com/v1/tracks/{track_id}',
-            headers=headers
-        )
-
-        track_details = response.json()
-        return jsonify(track_details)
-    except Exception as e:
-        logging.error('Error fetching track details:', exc_info=True)
-        return jsonify(error='Error fetching track details'), 500
-
-@app.route('/api/get-track-audio-features/<track_id>')
-def get_track_audio_features(track_id):
-    try:
-        access_token = spotify_api.get_access_token()
-
-        headers = {
-            'Authorization': f'Bearer {access_token}'
-        }
-
-        response = requests.get(
-            f'https://api.spotify.com/v1/audio-features/{track_id}',
-            headers=headers
-        )
-
-        audio_features = response.json()
-        return jsonify(audio_features)
-    except Exception as e:
-        logging.error('Error fetching audio features:', exc_info=True)
-        return jsonify(error='Error fetching audio features'), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
