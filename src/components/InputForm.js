@@ -5,7 +5,7 @@ function InputForm({ onSearch }) {
   const [artistName, setArtistName] = useState('');
   const [songName, setSongName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState([]); // Define results in state
+  const [results, setResults] = useState([]);
 
   const handleSearch = async () => {
     setLoading(true);
@@ -18,9 +18,8 @@ function InputForm({ onSearch }) {
       const response = await fetch(`/api/search-tracks?q=${searchTerm}`);
       const data = await response.json();
 
-      setResults(data.tracks); // Update the results state
-
-      onSearch(searchTerm, data.tracks); // Pass the search term and results to the parent component
+      setResults(data.tracks);
+      onSearch(searchTerm, data.tracks);
     } catch (error) {
       console.error('Error fetching search results:', error);
     } finally {

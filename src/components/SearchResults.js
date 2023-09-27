@@ -1,47 +1,41 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 
-function SearchResults({ artistName, songName, accessToken }) {
+function SearchResults({ artistName, songName }) {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (artistName && songName && accessToken) {
+    if (artistName && songName) {
       setLoading(true);
 
-      fetchSearchResults(artistName, songName, accessToken)
+      fetchSearchResults(artistName, songName)
         .then(data => {
           const tracks = data.tracks.items;
           setResults(tracks);
-          setLoading(false);
         })
         .catch(error => {
           console.error('Error fetching search results:', error);
+        })
+        .finally(() => {
           setLoading(false);
         });
     } else {
       setResults([]);
     }
-  }, [artistName, songName, accessToken]);
+  }, [artistName, songName]);
 
-  const fetchSearchResults = async (artistName, songName, accessToken) => {
+  const fetchSearchResults = async (artistName, songName) => {
     const API_URL = 'https://api.spotify.com/v1/search';
     const searchQuery = `${artistName} ${songName}`;
     const encodedQuery = encodeURIComponent(searchQuery);
 
     try {
-      const response = await fetch(`${API_URL}?q=${encodedQuery}&type=track`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`
-        }
-      });
-
+      const response = await fetch(`${API_URL}?q=${encodedQuery}&type=track`);
       if (!response.ok) {
         throw new Error('Error fetching search results. Check your request.');
       }
 
       const data = await response.json();
-      console.log('Response data:', data);
       return data;
     } catch (error) {
       console.error('Error fetching search results:', error);

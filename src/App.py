@@ -1,9 +1,9 @@
 import logging
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-import os
-from spotify_api import SpotifyAPI  # Ensure your SpotifyAPI class is imported
 import requests
+from spotify_api import SpotifyAPI  # Ensure your SpotifyAPI class is imported
+from decouple import config  # Import config from python-decouple
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)  # Set the log level to DEBUG
@@ -15,8 +15,9 @@ CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 def hello_world():
     return jsonify(message='Welcome to the Spotify API Server')
 
-CLIENT_ID = os.getenv('CLIENT_ID')
-CLIENT_SECRET = os.getenv('CLIENT_SECRET')
+# Use config to read the client credentials from the .env file
+CLIENT_ID = config('CLIENT_ID')
+CLIENT_SECRET = config('CLIENT_SECRET')
 
 spotify_api = SpotifyAPI(CLIENT_ID, CLIENT_SECRET)
 
@@ -28,6 +29,9 @@ def search_tracks():
 
     try:
         access_token = spotify_api.get_access_token()  # Updated method name
+
+        # Log the access token
+        logging.debug('Access Token:', access_token)
 
         headers = {
             'Authorization': f'Bearer {access_token}'
@@ -43,10 +47,11 @@ def search_tracks():
         tracks = response_data.get('tracks', {}).get('items', [])
 
         # Log the response
-        logging.debug('Spotify API Response:', response.text)
+        logging.debug('Spotify API Response:', response.status_code, response.headers, response.text)
 
         return jsonify({'tracks': tracks})
     except Exception as e:
+        # Log any errors that occur during the token retrieval or API request
         logging.error('Error fetching from Spotify API:', exc_info=True)
         return jsonify(error='Error fetching from Spotify API'), 500
 
