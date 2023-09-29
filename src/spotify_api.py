@@ -25,16 +25,18 @@ class SpotifyAPI:
                 'grant_type': 'client_credentials'
             }, headers=headers)
 
-            auth_data = auth_response.json()
+            if auth_response.status_code == 200:
+                auth_data = auth_response.json()
 
-            if 'access_token' in auth_data:
-                # Update the access token and its expiration time
-                self.access_token = auth_data['access_token']
-                expiration_seconds = auth_data['expires_in']
-                self.expiration_time = datetime.now() + timedelta(seconds=expiration_seconds)
+                if 'access_token' in auth_data:
+                    # Update the access token and its expiration time
+                    self.access_token = auth_data['access_token']
+                    expiration_seconds = auth_data['expires_in']
+                    self.expiration_time = datetime.now() + timedelta(seconds=expiration_seconds)
+                    return self.access_token
+                else:
+                    raise Exception("Failed to obtain access token. No 'access_token' in the response.")
             else:
-                # Handle the case where obtaining an access token fails
-                print(f"Failed to obtain access token from Spotify API: {auth_data}")
-                raise Exception("Failed to obtain access token from Spotify API")
+                raise Exception(f"Failed to obtain access token. Status code: {auth_response.status_code}")
 
         return self.access_token

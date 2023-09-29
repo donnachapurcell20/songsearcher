@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 
-function SearchResults({ artistName, songName }) {
+function SearchResults({ artistName, songName, accessToken }) {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -8,7 +8,7 @@ function SearchResults({ artistName, songName }) {
     if (artistName && songName) {
       setLoading(true);
 
-      fetchSearchResults(artistName, songName)
+      fetchSearchResults(artistName, songName, accessToken)
         .then(data => {
           const tracks = data.tracks.items;
           setResults(tracks);
@@ -22,26 +22,39 @@ function SearchResults({ artistName, songName }) {
     } else {
       setResults([]);
     }
-  }, [artistName, songName]);
+  }, [artistName, songName, accessToken]);
 
-  const fetchSearchResults = async (artistName, songName) => {
+  const fetchSearchResults = async (artistName, songName, accessToken) => {
     const API_URL = 'https://api.spotify.com/v1/search';
     const searchQuery = `${artistName} ${songName}`;
     const encodedQuery = encodeURIComponent(searchQuery);
-
+  
     try {
-      const response = await fetch(`${API_URL}?q=${encodedQuery}&type=track`);
+      const response = await fetch(`${API_URL}?q=${encodedQuery}&type=track`, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+  
+      // Log the request URL and headers
+      console.log('Request URL:', `${API_URL}?q=${encodedQuery}&type=track`);
+      console.log('Request Headers:', {
+        'Authorization': `Bearer ${accessToken}`
+      });
+  
       if (!response.ok) {
         throw new Error('Error fetching search results. Check your request.');
       }
-
+  
       const data = await response.json();
+      console.log('Response Data:', data); // Log the response data
       return data;
     } catch (error) {
       console.error('Error fetching search results:', error);
       throw error;
     }
   };
+  
 
   return (
     <div className="search-results">
