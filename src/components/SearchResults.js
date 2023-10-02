@@ -26,7 +26,7 @@ function SearchResults({ artistName, songName, accessToken }) {
 
   const fetchSearchResults = async (artistName, songName, accessToken) => {
     const API_URL = 'https://api.spotify.com/v1/search';
-    const searchQuery = `${artistName} ${songName}`;
+    const searchQuery = `artist:"${artistName}" track:"${songName}"`;
     const encodedQuery = encodeURIComponent(searchQuery);
   
     try {
@@ -43,7 +43,7 @@ function SearchResults({ artistName, songName, accessToken }) {
       });
   
       if (!response.ok) {
-        throw new Error('Error fetching search results. Check your request.');
+        throw Error('Error fetching search results. Check your request.');
       }
   
       const data = await response.json();
@@ -54,7 +54,6 @@ function SearchResults({ artistName, songName, accessToken }) {
       throw error;
     }
   };
-  
 
   return (
     <div className="search-results">
