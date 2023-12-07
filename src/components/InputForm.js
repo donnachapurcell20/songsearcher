@@ -89,4 +89,6 @@ function InputForm({ onSearch }) {
   );
 }
 
+
 export default InputForm;
+

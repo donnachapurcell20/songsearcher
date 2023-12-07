@@ -4,6 +4,9 @@ from flask_cors import CORS
 import requests
 from spotify_api import SpotifyAPI  # Import your SpotifyAPI class
 from decouple import config  # Import config from python-decouple
+from youtube_service import youtube_search_function
+from dotenv import load_dotenv
+
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)  # Set the log level to DEBUG
@@ -68,6 +71,24 @@ def search_tracks():
         # Log any errors that occur during the token retrieval or API request
         logging.error('Error fetching from Spotify API:', exc_info=True)
         return jsonify(error='Error fetching from Spotify API'), 500, {'Content-Type': 'application/json'}
+    
+@app.route('/api/youtube-search')
+def youtube_search():
+    artist_name = request.args.get('artistName')
+    song_name = request.args.get('songName')
 
+    if not artist_name or not song_name:
+        return jsonify(error='Missing artist name or song name'), 400, {'Content-Type': 'application/json'}
+
+    try:
+        videos = youtube_search_function(artist_name, song_name)
+        return jsonify({'videos': videos}), 200, {'Content-Type': 'application/json'}
+    except Exception as e:
+        error_message = f'Error fetching from YouTube API: {str(e)}'
+        logging.error(error_message, exc_info=True)
+        return jsonify(error=error_message), 500, {'Content-Type': 'application/json'}
+
+    
+    
 if __name__ == '__main__':
     app.run(debug=True)
