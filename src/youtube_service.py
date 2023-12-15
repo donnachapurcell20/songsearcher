@@ -1,12 +1,13 @@
 from googleapiclient.discovery import build
 from flask_caching import Cache
+from flask import jsonify
 from decouple import config
-from google.auth import exceptions
+import logging
 
 
 cache = Cache(config={'CACHE_TYPE': 'simple'})
 
-YOUTUBE_API_KEY = config('YOUTUBE_API_KEY')  # Add your YouTube API key to your .env file
+YOUTUBE_API_KEY = config('YOUTUBE_API_KEY')  # Add YouTube API key to .env file
 
 @cache.memoize(timeout=600)  # Cache the results for 10 minutes
 def youtube_search_function(artist_name, song_name):
@@ -23,11 +24,11 @@ def youtube_search_function(artist_name, song_name):
     videos = response.get('items', [])
     return videos
 
-from google.auth import exceptions
-
-try:
-    youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
-except exceptions.RefreshError:
-    # Handle token refresh errors here
-    print("Error refreshing YouTube API token.")
-    raise
+def format_youtube_response(artist_name, song_name):
+    try:
+        videos = youtube_search_function(artist_name, song_name)
+        return jsonify(videos=videos), 200
+    except Exception as e:
+        error_message = f'Error fetching from YouTube API: {str(e)}'
+        logging.error(error_message, exc_info=True)
+        return jsonify(error=error_message), 500

@@ -69,10 +69,14 @@ function SearchResults({ artistName, songName, accessToken }) {
       }
   
       try {
-        const data = await response.json();
-        return data;
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const data = await response.json();
+          return data;
+        } else {
+          throw new Error('Response is not in JSON format');
+        }
       } catch (jsonError) {
-        // If parsing as JSON fails, log the raw response and throw the error
         console.error('Error parsing YouTube response as JSON:', jsonError);
         const rawResponse = await response.text();
         console.error('Raw response:', rawResponse);
@@ -82,7 +86,10 @@ function SearchResults({ artistName, songName, accessToken }) {
       console.error('Error fetching YouTube results:', error);
       throw error;
     }
-  };  
+  };
+  
+  
+  
   
   
   return (
@@ -129,7 +136,7 @@ function SearchResults({ artistName, songName, accessToken }) {
                     <div className="result-card">
                       {/* Display YouTube video details here */}
                       <h3 className="video-title">{video.snippet.title}</h3>
-                      <p className="channel-title">{video.snippet.channelTitle}</p>
+                      {/* <p className="channel-title">{video.snippet.channelTitle}</p> */}
                       {/* You can add more details here */}
                     </div>
                   </div>
