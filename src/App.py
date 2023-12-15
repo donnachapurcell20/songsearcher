@@ -4,9 +4,9 @@ from flask_cors import CORS
 import requests
 from spotify_api import SpotifyAPI  # Import your SpotifyAPI class
 from decouple import config  # Import config from python-decouple
-from youtube_service import youtube_search_function, format_youtube_response  # Replace with the actual module name
 from dotenv import load_dotenv
 from flask import jsonify, request
+from youtube_service import format_youtube_response
 
 
 # Configure logging
@@ -22,6 +22,7 @@ def hello_world():
 # Use config to read the client credentials from the .env file
 CLIENT_ID = config('CLIENT_ID')
 CLIENT_SECRET = config('CLIENT_SECRET')
+YOUTUBE_API_KEY = config('YOUTUBE_API_KEY')
 
 spotify_api = SpotifyAPI(CLIENT_ID, CLIENT_SECRET)
 
@@ -75,15 +76,11 @@ def search_tracks():
     
 
 
-@app.route('/api/youtube-search')
+# Endpoint for YouTube search
+@app.route('/api/youtube-search', methods=['GET'])
 def youtube_search():
-    artist_name = request.args.get('artistName')
-    song_name = request.args.get('songName')
-
-    if not artist_name or not song_name:
-        return jsonify(error='Missing artist name or song name'), 400
-
-    return format_youtube_response(artist_name, song_name)
+    # Pass request arguments to the format_youtube_response function
+    return format_youtube_response(request.args)
 
 
     
