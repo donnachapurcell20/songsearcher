@@ -56,37 +56,40 @@ function SearchResults({ artistName, songName, accessToken }) {
   };
 
   const fetchYoutubeResults = async (artistName, songName) => {
+    const YOUTUBE_API_URL = 'https://www.googleapis.com/youtube/v3/search';
+    const searchQuery = `${artistName} ${songName}`;
+    const encodedQuery = encodeURIComponent(searchQuery);
+
     try {
-      const response = await fetch(`/api/youtube-search?artistName=${artistName}&songName=${songName}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      if (!response.ok) {
-        throw new Error(`Error fetching YouTube results. Status: ${response.status}`);
-      }
-  
-      try {
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-          const data = await response.json();
-          return data;
-        } else {
-          throw new Error('Response is not in JSON format');
+        const response = await fetch(`${YOUTUBE_API_URL}?q=${encodedQuery}&type=video&part=snippet&maxResults=5`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error fetching YouTube results. Status: ${response.status}`);
         }
-      } catch (jsonError) {
-        console.error('Error parsing YouTube response as JSON:', jsonError);
-        const rawResponse = await response.text();
-        console.error('Raw response:', rawResponse);
-        throw jsonError;
-      }
+
+        try {
+            const data = await response.json();
+            return data;
+        } catch (jsonError) {
+            // If parsing as JSON fails, log the raw response and throw the error
+            console.error('Error parsing YouTube response as JSON:', jsonError);
+            const rawResponse = await response.text();
+            console.error('Raw response:', rawResponse);
+            throw jsonError;
+        }
     } catch (error) {
-      console.error('Error fetching YouTube results:', error);
-      throw error;
+        console.error('Error fetching YouTube results:', error);
+        throw error;
     }
-  };
+};
+
+      
+  
   
   
   
