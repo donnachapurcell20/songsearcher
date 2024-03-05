@@ -1,66 +1,38 @@
-from googleapiclient.discovery import build
+import requests
 from flask import jsonify
-from decouple import config
 import logging
+from urllib.parse import urlencode
 
-# Initialize Flask Cache
-from flask_caching import Cache
-cache = Cache(config={'CACHE_TYPE': 'simple'})
+def youtube_search_function(artist_name, song_name):
+    base_url = "https://www.googleapis.com/youtube/v3/search"
+    params = {
+        'part': 'snippet',
+        'type': 'video',
+        'q': f"{artist_name} {song_name}",
+        'maxResults': 5,
+        'key': 'YOUTUBE_API_KEY'
+    }
 
-# Get YouTube API key from environment variable
-YOUTUBE_API_KEY = config('YOUTUBE_API_KEY')
+    response = requests.get(base_url, params=params)
 
-# Cache the results for 10 minutes
-@cache.memoize(timeout=600)
-def youtube_search_function(request_args):
-    try:
-        # Extract parameters directly from request arguments
-        artist_name = request_args.get('artistName')
-        song_name = request_args.get('songName')
+    if response.status_code != 200:
+        raise ValueError('Error fetching from YouTube API')
 
-        if not artist_name or not song_name:
-            raise ValueError('Missing artist name or song name')
+    data = response.json()
+    videos = data['items']
 
-        # Build YouTube API service
-        youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
+    return format_youtube_response(videos)
 
-        # Construct the search query
-        search_query = f'{artist_name} {song_name}'
+def format_youtube_response(videos):
+    formatted_videos = []
 
-        # Execute the YouTube API search
-        response = youtube.search().list(
-            q=search_query,
-            type='video',
-            part='snippet',
-            maxResults=5
-        ).execute()
+    for video in videos:
+        video_data = {
+            'title': video['snippet']['title'],
+            'thumbnail': video['snippet']['thumbnails']['default']['url'],
+            'url': f'https://www.youtube.com/watch?v={video["id"]["videoId"]}'
+        }
 
-        # Extract video items from the response
-        videos = response.get('items', [])
+        formatted_videos.append(video_data)
 
-        return videos
-
-    except Exception as e:
-        # Log and handle exceptions
-        error_message = f'Error fetching from YouTube API: {str(e)}'
-        logging.error(error_message, exc_info=True)
-        raise ValueError(error_message)
-
-# Format the YouTube API response
-def format_youtube_response(request_args):
-    try:
-        # Call the youtube_search_function with request arguments
-        videos = youtube_search_function(request_args)
-
-        # Return a JSON response
-        return jsonify(videos=videos), 200
-
-    except ValueError as ve:
-        # Handle the case where parameters are missing
-        return jsonify(error=str(ve)), 400
-
-    except Exception as e:
-        # Log and handle other exceptions
-        error_message = f'Error formatting YouTube API response: {str(e)}'
-        logging.error(error_message, exc_info=True)
-        return jsonify(error=error_message), 500
+    return jsonify(videos=formatted_videos), 200, {'Content-Type': 'application/json'}
