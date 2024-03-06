@@ -12,11 +12,20 @@ function InputForm() {
     event.preventDefault();
   
     try {
-      const response = await axios.get(`http://localhost:5000/api/youtube-search?artistName=${artist}&songName=${song}`);
-      console.log(response.data);
+      // Make request to Spotify API
+      const spotifyResponse = await axios.get(`http://localhost:5000/api/search-tracks?artistName=${artist}&songName=${song}`);
+
+      // Make request to YouTube API
+      const youtubeResponse = await axios.get(`http://localhost:5000/api/youtube-search?artistName=${artist}&songName=${song}`);
+
+      // Handle the responses
+      console.log('Spotify Response:', spotifyResponse.data);
+      console.log('YouTube Response:', youtubeResponse.data);
+
+      // Navigate to search results page
       navigate(`/search-results?artist=${artist}&song=${song}`);
     } catch (error) {
-      console.error('Error fetching YouTube data:', error);
+      console.error('Error fetching data:', error);
     }
   };
 
