@@ -6,6 +6,8 @@ import SearchResults from './SearchResults.js';
 function InputForm() {
   const [artist, setArtist] = useState('');
   const [song, setSong] = useState('');
+  const [spotifyResults, setSpotifyResults] = useState([]);
+  const [youtubeResults, setYoutubeResults] = useState([]);
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -14,13 +16,11 @@ function InputForm() {
     try {
       // Make request to Spotify API
       const spotifyResponse = await axios.get(`http://localhost:5000/api/search-tracks?artistName=${artist}&songName=${song}`);
+      setSpotifyResults(spotifyResponse.data.tracks);
 
       // Make request to YouTube API
       const youtubeResponse = await axios.get(`http://localhost:5000/api/youtube-search?artistName=${artist}&songName=${song}`);
-
-      // Handle the responses
-      console.log('Spotify Response:', spotifyResponse.data);
-      console.log('YouTube Response:', youtubeResponse.data);
+      setYoutubeResults(youtubeResponse.data.videos);
 
       // Navigate to search results page
       navigate(`/search-results?artist=${artist}&song=${song}`);
@@ -44,7 +44,7 @@ function InputForm() {
         onChange={(e) => setSong(e.target.value)}
       />
       <button type="submit">Search</button>
-      <SearchResults results={[]} />
+      <SearchResults spotifyResults={spotifyResults} youtubeResults={youtubeResults} />
     </form>
   );
 }
