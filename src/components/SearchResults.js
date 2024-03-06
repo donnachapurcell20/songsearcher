@@ -1,6 +1,10 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 
-function SearchResults({ spotifyResults, youtubeResults }) {
+function SearchResults() {
+  const location = useLocation();
+  const { spotifyResults, youtubeResults } = location.state || {};
+
   return (
     <div className="search-results">
       {/* Spotify Results */}
