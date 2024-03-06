@@ -11,6 +11,7 @@ function SearchResults() {
       <div>
         {spotifyResults && spotifyResults.length > 0 ? (
           <div>
+            <h2>Spotify Results</h2>
             {spotifyResults.map((result, index) => (
               <div key={index} className="result-item">
                 <div className="result-card">
@@ -35,21 +36,21 @@ function SearchResults() {
 
       {/* YouTube Results */}
       <div>
-        {youtubeResults && youtubeResults.length > 0 ? (
+        {youtubeResults ? (
           <div>
-            {youtubeResults.map((video, index) => (
-              <div key={index} className="result-item">
-                <div className="result-card">
-                  <h3 className="video-title">{video.snippet.title}</h3>
-                  <img
-                    src={video.snippet.thumbnails.default.url}
-                    alt={`${video.snippet.title} Thumbnail`}
-                    className="video-thumbnail"
-                    style={{ width: '100px', height: '100px' }}
-                  />
-                </div>
+            <h2>YouTube Results</h2>
+            <div className="result-item">
+              <div className="result-card">
+                <h3 className="video-title">{youtubeResults.title}</h3>
+                <img
+                  src={youtubeResults.thumbnail}
+                  alt={`${youtubeResults.title} Thumbnail`}
+                  className="video-thumbnail"
+                  style={{ width: '100px', height: '100px' }}
+                />
+                <a href={youtubeResults.url} target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
               </div>
-            ))}
+            </div>
           </div>
         ) : (
           <p>No YouTube results found.</p>
