@@ -4,6 +4,7 @@ function SearchResults({ artistName, songName, accessToken }) {
   const [spotifyResults, setSpotifyResults] = useState([]);
   const [youtubeResults, setYoutubeResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (artistName && songName) {
@@ -15,12 +16,14 @@ function SearchResults({ artistName, songName, accessToken }) {
       ])
         .then(([spotifyData, youtubeData]) => {
           const spotifyTracks = spotifyData.tracks.items;
-          const youtubeVideos = youtubeData.videos;
+          const youtubeVideos = youtubeData.items;
           setSpotifyResults(spotifyTracks);
           setYoutubeResults(youtubeVideos);
+          setError(null); // Clear any previous errors
         })
         .catch(error => {
           console.error('Error fetching search results:', error);
+          setError(error.message || 'Error fetching search results');
         })
         .finally(() => {
           setLoading(false);
@@ -28,6 +31,7 @@ function SearchResults({ artistName, songName, accessToken }) {
     } else {
       setSpotifyResults([]);
       setYoutubeResults([]);
+      setError(null);
     }
   }, [artistName, songName, accessToken]);
 
@@ -59,41 +63,30 @@ function SearchResults({ artistName, songName, accessToken }) {
     const YOUTUBE_API_URL = 'https://www.googleapis.com/youtube/v3/search';
     const searchQuery = `${artistName} ${songName}`;
     const encodedQuery = encodeURIComponent(searchQuery);
-  
+
     try {
       const response = await fetch(`${YOUTUBE_API_URL}?q=${encodedQuery}&type=video&part=snippet&maxResults=5`, {
         method: 'GET',
       });
-  
+
       if (!response.ok) {
         throw new Error(`Error fetching YouTube results. Status: ${response.status}`);
       }
-  
-      try {
-        const data = await response.json();
-        return data;
-      } catch (jsonError) {
-        // If parsing as JSON fails, log the raw response and throw the error
-        console.error('Error parsing YouTube response as JSON:', jsonError);
-        const rawResponse = await response.text();
-        console.error('Raw response:', rawResponse);
-        throw jsonError;
-      }
+
+      const data = await response.json();
+      return data;
     } catch (error) {
       console.error('Error fetching YouTube results:', error);
-      console.error('Request headers:', JSON.stringify(new Headers(fetch.headers)));
-      console.error('Request query:', `?q=${encodedQuery}&type=video&part=snippet&maxResults=5`);
       throw error;
     }
   };
 
-      
-  
-  
   return (
     <div className="search-results">
       {loading ? (
         <p>Loading...</p>
+      ) : error ? (
+        <p>Error: {error}</p>
       ) : (
         <div>
           {/* Spotify Results */}
@@ -132,9 +125,13 @@ function SearchResults({ artistName, songName, accessToken }) {
                 {youtubeResults.map((video, index) => (
                   <div key={index} className="result-item">
                     <div className="result-card">
-                      {/* Display YouTube video details here */}
                       <h3 className="video-title">{video.snippet.title}</h3>
-                      {/* <p className="channel-title">{video.snippet.channelTitle}</p> */}
+                      <img
+                        src={video.snippet.thumbnails.default.url} // or any other size like medium, high, etc.
+                        alt={`${video.snippet.title} Thumbnail`}
+                        className="video-thumbnail"
+                        style={{ width: '100px', height: '100px' }} // Adjust the width and height as needed
+                      />
                       {/* You can add more details here */}
                     </div>
                   </div>

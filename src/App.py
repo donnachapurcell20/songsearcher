@@ -2,15 +2,14 @@ from flask import Flask, request, jsonify, make_response
 import os
 import logging
 import requests
-from spotipy import SpotifyAPI
+from spotify_api import SpotifyAPI
 from youtube_service import youtube_search_function
 from dotenv import load_dotenv
 from flask_caching import Cache
 from flask_cors import CORS
-from spotipy import Spotify
-
-
-
+import datetime
+import base64
+from datetime import timedelta
 
 # Load environment variables from .env file
 load_dotenv()
@@ -38,32 +37,53 @@ spotify_api = SpotifyAPI(CLIENT_ID, CLIENT_SECRET)
 @app.route('/api/get-access-token')
 def get_access_token():
     try:
+        # Instantiate the SpotifyAPI class with client credentials
+        spotify_api = SpotifyAPI(CLIENT_ID, CLIENT_SECRET)
+        
+        # Call the get_access_token method
         access_token = spotify_api.get_access_token()
+        
+        # Return the access token
         return jsonify({'accessToken': access_token}), 200, {'Content-Type': 'application/json'}
     except Exception as e:
         return jsonify(error='Error fetching access token'), 500, {'Content-Type': 'application/json'}
 
-@app.route('/api/search-tracks')
+@app.route('/api/search-tracks', methods=['GET'])
 def search_tracks():
-    search_term = request.args.get('q')
-    if not search_term:
-        return jsonify(error='Missing search term'), 400, {'Content-Type': 'application/json'}
+    artist_name = request.args.get('artistName')
+    song_name = request.args.get('songName')
+
+    if not artist_name or not song_name:
+        return jsonify(error='Missing artistName or songName parameters'), 400, {'Content-Type': 'application/json'}
 
     try:
+        logging.info(f"Searching Spotify for artist: {artist_name}, song: {song_name}")
+
+        # Get access token
         access_token = spotify_api.get_access_token()
-        headers = {
-            'Authorization': f'Bearer {access_token}'
-        }
-        response = requests.get(
-            f'https://api.spotify.com/v1/search?q={search_term}&type=track',
-            headers=headers
-        )
-        response_data = response.json()
-        tracks = response_data.get('tracks', {}).get('items', [])
+        logging.info(f"Access token obtained: {access_token}")
+
+        # Construct search term
+        search_term = f"artist:{artist_name} track:{song_name}"
+        logging.info(f"Search term: {search_term}")
+
+        # Make request to Spotify API
+        response = spotify_api.make_request("/search", "GET", params={"q": search_term, "type": "track"})
+        tracks = response["tracks"]["items"]
+
+        logging.info(f"Spotify search successful. Found {len(tracks)} tracks.")
+        logging.info(f"Spotify response: {tracks}")  # Log the Spotify response
+
         return jsonify({'tracks': tracks}), 200, {'Content-Type': 'application/json'}
     except Exception as e:
         logging.error('Error fetching from Spotify API:', exc_info=True)
-        return jsonify(error='Error fetching from Spotify API'), 500, {'Content-Type': 'application/json'}
+        if isinstance(e, requests.exceptions.RequestException):
+            return jsonify(error=f"Error fetching from Spotify API: {e}"), 500, {'Content-Type': 'application/json'}
+        elif isinstance(e, Exception):
+            return jsonify(error=f"Error fetching from Spotify API: {e}"), 500, {'Content-Type': 'application/json'}
+
+
+
 
 # Endpoint for YouTube search
 @app.route('/api/youtube-search', methods=['GET'])
@@ -71,29 +91,19 @@ def youtube_search():
     artist_name = request.args.get('artistName')
     song_name = request.args.get('songName')
 
-    try:
-        if not artist_name or not song_name:
-            raise ValueError('Missing artistName or songName parameters')
+    if not artist_name or not song_name:
+        return jsonify(error='Missing artistName or songName parameters'), 400, {'Content-Type': 'application/json'}
 
-        videos = youtube_search_function(artist_name, song_name, YOUTUBE_API_KEY)
-        return format_youtube_response(videos)
+    try:
+        videos = youtube_search_function(artist_name, song_name)
+        return jsonify({'videos': videos}), 200, {'Content-Type': 'application/json'}
 
     except ValueError as ve:
         return jsonify(error=str(ve)), 400, {'Content-Type': 'application/json'}
 
     except Exception as e:
-        logging.error('Error fetching from YouTube API:', exc_info=True)
         return jsonify(error='Error fetching from YouTube API'), 500, {'Content-Type': 'application/json'}
 
-def format_youtube_response(videos):
-    formatted_videos = [
-        {
-            'id': video['id']['videoId'],
-            'title': video['snippet']['title'],
-            'thumbnail': video['snippet']['thumbnails']['default']['url']
-        } for video in videos
-    ]
-    return jsonify({'videos': formatted_videos}), 200, {'Content-Type': 'application/json'}
-    
 if __name__ == '__main__':
+    app.add_url_rule('/', endpoint='index', view_func=lambda: 'Hello, World!')
     app.run(debug=True)
