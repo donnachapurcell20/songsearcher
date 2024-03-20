@@ -3,11 +3,12 @@ import base64
 from datetime import datetime, timedelta
 
 class SpotifyAPI:
-    def __init__(self, client_id, client_secret):
-        self.client_id = client_id
-        self.client_secret = client_secret
+    def __init__(self, CLIENT_ID, CLIENT_SECRET):
+        self.client_id = CLIENT_ID
+        self.client_secret = CLIENT_SECRET
         self.access_token = None
         self.expiration_time = datetime.min
+        self.base_url = "https://api.spotify.com/v1"
 
     def get_access_token(self):
         # Check if the current token has expired
@@ -40,3 +41,34 @@ class SpotifyAPI:
                 raise Exception(f"Failed to obtain access token. Status code: {auth_response.status_code}")
 
         return self.access_token
+
+    def make_request(self, endpoint, method, params=None, headers=None):
+        if not headers:
+            headers = {}
+
+        if not params:
+            params = {}
+
+        # Add access token to headers if it's not expired
+        if self.access_token and self.expiration_time > datetime.now():
+            headers['Authorization'] = f'Bearer {self.access_token}'
+
+        url = self.base_url + endpoint
+
+        if method == 'GET':
+            response = requests.get(url, params=params, headers=headers)
+        elif method == 'POST':
+            response = requests.post(url, json=params, headers=headers)
+        else:
+            raise Exception(f"Invalid request method: {method}")
+
+        if response.status_code != 200 and response.status_code != 201:
+            raise Exception(f"Request failed with status code: {response.status_code}")
+
+        return response.json()
+
+    def search_tracks(self, artist_name, song_name):
+        search_term = f"artist:{artist_name} track:{song_name}"
+        params = {"q": search_term, "type": "track"}
+        response = self.make_request("/search", "GET", params=params)
+        return response["tracks"]["items"]
