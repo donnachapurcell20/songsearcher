@@ -7,6 +7,9 @@ from youtube_service import youtube_search_function
 from dotenv import load_dotenv
 from flask_caching import Cache
 from flask_cors import CORS
+import datetime
+import base64
+from datetime import timedelta
 
 # Load environment variables from .env file
 load_dotenv()
@@ -16,6 +19,9 @@ logging.basicConfig(level=logging.DEBUG)
 
 # Initialize Flask app
 app = Flask(__name__)
+
+# Initialize Flask Cache
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
 # Configure CORS
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})

@@ -9,7 +9,10 @@
     "axios": "1.4.0",
     "bootstrap": "^5.3.1",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "googleapis": "^134.0.0",
+=======
+>>>>>>> 127afcafac5af2f9b2d4acc819e3e3a3c198bd97
 =======
 >>>>>>> 127afcafac5af2f9b2d4acc819e3e3a3c198bd97
     "node-fetch": "^3.3.2",
@@ -21,12 +24,16 @@
   },
   "devDependencies": {
 <<<<<<< HEAD
+<<<<<<< HEAD
     "@babel/cli": "^7.23.9",
     "@babel/core": "^7.24.0",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/plugin-transform-runtime": "^7.24.0",
     "@babel/preset-env": "^7.24.0",
     "@babel/preset-react": "^7.23.3",
+=======
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+>>>>>>> 127afcafac5af2f9b2d4acc819e3e3a3c198bd97
 =======
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
 >>>>>>> 127afcafac5af2f9b2d4acc819e3e3a3c198bd97
@@ -58,7 +65,11 @@
   },
   "type": "module"
 <<<<<<< HEAD
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 127afcafac5af2f9b2d4acc819e3e3a3c198bd97
 =======
 }
 >>>>>>> 127afcafac5af2f9b2d4acc819e3e3a3c198bd97
