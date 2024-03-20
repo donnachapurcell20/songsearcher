@@ -9,24 +9,11 @@ function InputForm() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+
     try {
-      // Make request to Spotify API
-      const spotifyResponse = axios.get(`http://localhost:5000/api/search-tracks?artistName=${artist}&songName=${song}`);
-
-      // Make request to YouTube API
-      const youtubeResponse = axios.get(`http://localhost:5000/api/youtube-search?artistName=${artist}&songName=${song}`);
-
-      // Wait for both requests to complete
-      const [spotifyResult, youtubeResult] = await Promise.all([spotifyResponse, youtubeResponse]);
-
-      // Navigate to search results page with query params
-      navigate(`/search-results?artist=${artist}&song=${song}`, {
-        state: {
-          spotifyResults: spotifyResult.data.tracks,
-          youtubeResults: youtubeResult.data.videos
-        }
-      });
+      const spotifyResponse = await axios.get(`http://localhost:5000/api/search-tracks?artistName=${artist}&songName=${song}`);
+      const youtubeResponse = await axios.get(`http://localhost:5000/api/youtube-search?artistName=${artist}&songName=${song}`);
+      navigate(`/search-results`, { state: { spotifyResults: spotifyResponse.data.tracks, youtubeResults: youtubeResponse.data.videos } });
     } catch (error) {
       console.error('Error fetching data:', error);
     }
