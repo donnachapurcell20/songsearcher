@@ -13,7 +13,13 @@ function InputForm() {
     try {
       const spotifyResponse = await axios.get(`http://localhost:5000/api/search-tracks?artistName=${artist}&songName=${song}`);
       const youtubeResponse = await axios.get(`http://localhost:5000/api/youtube-search?artistName=${artist}&songName=${song}`);
-      navigate(`/search-results`, { state: { spotifyResults: spotifyResponse.data.tracks, youtubeResults: youtubeResponse.data.videos } });
+      
+      // Extract data from responses
+      const spotifyTracks = spotifyResponse.data.tracks;
+      const youtubeVideos = youtubeResponse.data.videos;
+
+      // Navigate to search results page with both Spotify and YouTube results
+      navigate(`/search-results`, { state: { spotifyResults: spotifyTracks, youtubeResults: youtubeVideos } });
     } catch (error) {
       console.error('Error fetching data:', error);
     }

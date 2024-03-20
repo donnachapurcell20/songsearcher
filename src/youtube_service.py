@@ -13,7 +13,7 @@ def youtube_search_function(artist_name, song_name):
         'part': 'snippet',
         'type': 'video',
         'q': f"{artist_name} {song_name}",
-        'maxResults': 1,
+        'maxResults': 5,  # Increase maxResults to get more videos
         'key': youtube_api_key
     }
 
@@ -23,16 +23,15 @@ def youtube_search_function(artist_name, song_name):
         raise ValueError('Error fetching from YouTube API')
 
     data = response.json()
-    videos = data['items']
+    videos = data.get('items', [])
 
-    if not videos:
-        raise ValueError('No videos found on YouTube')
+    formatted_videos = []
+    for video in videos:
+        video_data = {
+            'title': video['snippet']['title'],
+            'thumbnail': video['snippet']['thumbnails']['default']['url'],
+            'url': f'https://www.youtube.com/watch?v={video["id"]["videoId"]}'
+        }
+        formatted_videos.append(video_data)
 
-    video = videos[0]
-    video_data = {
-        'title': video['snippet']['title'],
-        'thumbnail': video['snippet']['thumbnails']['default']['url'],
-        'url': f'https://www.youtube.com/watch?v={video["id"]["videoId"]}'
-    }
-
-    return video_data
+    return formatted_videos
