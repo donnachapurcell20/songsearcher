@@ -1,9 +1,14 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function SearchResults() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { spotifyResults, youtubeResults } = location.state || {};
+
+  const handleBack = () => {
+    navigate(-1); // Navigate back to the previous page
+  };
 
   return (
     <div className="search-results">
@@ -54,6 +59,9 @@ function SearchResults() {
           <p>No YouTube results found.</p>
         )}
       </div>
+
+      {/* Back Button */}
+      <button onClick={handleBack}>Back</button>
     </div>
   );
 }
